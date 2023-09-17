@@ -155,7 +155,8 @@ bool desenha = false;
 bool FoiClicado = false;
 
 float angulo=0.0;
-Ponto movingPoint; // point that the user will move around in the screen
+Ponto movingPoint;     // point that the user will move around in the screen
+int currentPolygonIdx; // index of the polygon in which the movingPoint is currently located
 Ponto voroMin, voroMax;
 
 // **********************************************************************
@@ -205,6 +206,35 @@ void GeraPontos(int qtd)
     }
 }
 
+/**
+* Applies the convex inclusion algorithm to find the current polygon where the moving point is.
+* @param callsToProdVetorial the number of calls to the ProdVetorial method.
+* @return the index of the polygon where the moving point is currently in.
+*/
+int findCurrentPolygonConvexAlgorithm(int& callsToProdVetorial)
+{
+    int NcallsToProdVet = 0; // calls to calculation method
+    int i = 0; // polygon index
+
+    for (i = 0; i < Voro.getNPoligonos(); i++) // for each polygon
+    {
+        Envelope enve = Voro.getEnvelope(i);
+        if (enve.pontoEstaDentro(movingPoint)) // if the point is in the envelope
+        {
+            Poligono poligono = Voro.getPoligono(i);
+            if (poligono.ponto_Dentro_Poligno(movingPoint, &NcallsToProdVet)) // if the point is in the polygon
+            {
+                // we have found the polygon
+                callsToProdVetorial = NcallsToProdVet;
+                cout << "Poligno atual (i): " << i << std::endl;
+                return i;
+            }
+        }
+    }
+    callsToProdVetorial = NcallsToProdVet;
+    return -1;
+}
+
 // **********************************************************************
 //
 // **********************************************************************
@@ -237,6 +267,10 @@ void init()
 
     Min = Min - Largura * 0.1;
     Max = Max + Largura * 0.1;
+
+    // initialize current polygon where the moving point is at
+    int counter;
+    currentPolygonIdx = findCurrentPolygonConvexAlgorithm(counter);
 
     Voro.obtemLimites(voroMin, voroMax);
 }
@@ -361,31 +395,11 @@ string concavePolygonInclusion(int* counter)
 */
 string convexPolygonInclusion(int* counter)
 {
-    
-    int NcallsToProdVet = 0; // Inicialize um contador para acompanhar as chamadas de fun��o
-    int i = 0; // polygon index (TODO: implement logic to find this out)
-
-        for (i = 0; i < Voro.getNPoligonos(); i++) // Itera sobre todos os pol�gonos
-        {
-            Poligono poligono = Voro.getPoligono(i); // Obt�m o pol�gono atual
-            Envelope enve = Voro.getEnvelope(i); //Obt�m o ennvelope desse poligno
-            
-            if (enve.pontoEstaDentro(movingPoint))
-            {
-                // Verifica se o ponto est� dentro do pol�gono atual
-                if (poligono.ponto_Dentro_Poligno(movingPoint, &NcallsToProdVet))
-                {
-                    *counter = NcallsToProdVet;
-
-                    std::cout << "Poligno atual (i): " << i << std::endl;
-                    return colorNames[i*2]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
-                }
-            }
-        }
-        *counter = NcallsToProdVet;
-        return "Out Of Bounds"; // Retorna uma mensagem se o ponto n�o estiver em nenhum pol�gono
-
-
+    int NcallsToProdVet; // Inicialize um contador para acompanhar as chamadas de fun��o
+    int polygonIdx = findCurrentPolygonConvexAlgorithm(NcallsToProdVet);
+    *counter = NcallsToProdVet;
+    if (polygonIdx < 0) return "Out of bounds";
+    else                return colorNames[polygonIdx*2];
 }
 
 /**
