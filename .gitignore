@@ -1,0 +1,8 @@
+# Ignore everything by default
+*
+# Allow docs .cpp and .h files in the root directory and subdirectories, except those in a folder named GL
+!.gitignore
+!*.cpp
+!*.h
+!docs/
+GL/
