@@ -377,8 +377,8 @@ string convexPolygonInclusion(int* counter)
                 {
                     *counter = NcallsToProdVet;
 
-                    std::cout << "$" << i << std::endl;
-                    return "TODO " + colorNames[i*2]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
+                    std::cout << "Poligno atual (i): " << i << std::endl;
+                    return colorNames[i*2]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
                 }
             }
         }

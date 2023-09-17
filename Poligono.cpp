@@ -176,13 +176,14 @@ bool Poligono::ponto_Dentro_Poligno(Ponto ponto, int* cont)
     {
         Ponto A1 = Vertices[i];
         Ponto A2 = Vertices[(i + 1) % numVertices]; // Próximo vértice (faz loop no último vértice)
-
+        contador ++;
         if (!ponto_A_Esq_Aresta(ponto, A1, A2))
         {
+            *cont = contador;
             return false;//se tiver algum ponto do lado contrario, entao nao esta nele
         }
     }
-
+    *cont = contador;
     return true;
 
 }
