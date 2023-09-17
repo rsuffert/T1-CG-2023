@@ -1,6 +1,6 @@
 // **********************************************************************
-// PUCRS/Escola Politécnica
-// COMPUTAÇÃO GRÁFICA
+// PUCRS/Escola PolitÔøΩcnica
+// COMPUTAÔøΩÔøΩO GRÔøΩFICA
 //
 // Programa basico para criar aplicacoes 2D em OpenGL
 //
@@ -230,8 +230,8 @@ void init()
     for (int i=0; i<Voro.getNPoligonos(); i++)
         CoresDosPoligonos[i] = i*2;//rand()%80;
 
-    // Ajusta a largura da janela lógica
-    // em função do tamanho dos polígonos
+    // Ajusta a largura da janela lÔøΩgica
+    // em funÔøΩÔøΩo do tamanho dos polÔøΩgonos
     Ponto Largura;
     Largura = Max - Min;
 
@@ -254,7 +254,7 @@ void animate()
     TempoTotal += dt;
     nFrames++;
 
-    if (AccumDeltaT > 1.0/30) // fixa a atualização da tela em 30
+    if (AccumDeltaT > 1.0/30) // fixa a atualizaÔøΩÔøΩo da tela em 30
     {
         AccumDeltaT = 0;
         //angulo+=0.05;
@@ -278,9 +278,9 @@ void reshape( int w, int h )
     // Reset the coordinate system before modifying
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    // Define a area a ser ocupada pela area OpenGL dentro da Janela (Viewport/Janela de exibiÁ„o)
+    // Define a area a ser ocupada pela area OpenGL dentro da Janela (Viewport/Janela de exibiÔøΩÔøΩo)
     glViewport(0, 0, w, h);
-    // Define os limites logicos da area OpenGL dentro da Janela (Window/Janela de seleÁ„o/Universo)
+    // Define os limites logicos da area OpenGL dentro da Janela (Window/Janela de seleÔøΩÔøΩo/Universo)
     glOrtho(Min.x,Max.x,
             Min.y,Max.y,
             0,1);
@@ -361,18 +361,18 @@ string concavePolygonInclusion(int* counter)
 */
 string convexPolygonInclusion(int* counter)
 {
-
-    int NcallsToProdVet = 0; // Inicialize um contador para acompanhar as chamadas de função
+    
+    int NcallsToProdVet = 0; // Inicialize um contador para acompanhar as chamadas de funÔøΩÔøΩo
     int i = 0; // polygon index (TODO: implement logic to find this out)
 
-        for (i = 0; i < Voro.getNPoligonos(); i++) // Itera sobre todos os polígonos
+        for (i = 0; i < Voro.getNPoligonos(); i++) // Itera sobre todos os polÔøΩgonos
         {
-            Poligono poligono = Voro.getPoligono(i); // Obtém o polígono atual
-            Envelope enve = Voro.getEnvelope(i); //Obtém o ennvelope desse poligno
-
+            Poligono poligono = Voro.getPoligono(i); // ObtÔøΩm o polÔøΩgono atual
+            Envelope enve = Voro.getEnvelope(i); //ObtÔøΩm o ennvelope desse poligno
+            
             if (enve.pontoEstaDentro(movingPoint))
             {
-                // Verifica se o ponto está dentro do polígono atual
+                // Verifica se o ponto estÔøΩ dentro do polÔøΩgono atual
                 if (poligono.ponto_Dentro_Poligno(movingPoint, &NcallsToProdVet))
                 {
                     *counter = NcallsToProdVet;
@@ -383,7 +383,7 @@ string convexPolygonInclusion(int* counter)
             }
         }
         *counter = NcallsToProdVet;
-        return "Out Of Bounds"; // Retorna uma mensagem se o ponto não estiver em nenhum polígono
+        return "Out Of Bounds"; // Retorna uma mensagem se o ponto nÔøΩo estiver em nenhum polÔøΩgono
 
 
 }
@@ -410,7 +410,7 @@ void display( void )
 	// Limpa a tela coma cor de fundo
 	glClear(GL_COLOR_BUFFER_BIT);
 
-    // Define os limites lógicos da area OpenGL dentro da Janela
+    // Define os limites lÔøΩgicos da area OpenGL dentro da Janela
 	glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -447,8 +447,8 @@ void display( void )
 
 // **********************************************************************
 // ContaTempo(double tempo)
-//      conta um certo número de segundos e informa quanto frames
-// se passaram neste período.
+//      conta um certo nÔøΩmero de segundos e informa quanto frames
+// se passaram neste perÔøΩodo.
 // **********************************************************************
 void ContaTempo(double tempo)
 {
@@ -499,10 +499,10 @@ void keyboard ( unsigned char key, int x, int y )
 	}
 }
 // **********************************************************************
-// Esta função captura o clique do botao direito do mouse sobre a área de
-// desenho e converte a coordenada para o sistema de referência definido
-// na glOrtho (ver função reshape)
-// Este código é baseado em http://hamala.se/forums/viewtopic.php?t=20
+// Esta funÔøΩÔøΩo captura o clique do botao direito do mouse sobre a ÔøΩrea de
+// desenho e converte a coordenada para o sistema de referÔøΩncia definido
+// na glOrtho (ver funÔøΩÔøΩo reshape)
+// Este cÔøΩdigo ÔøΩ baseado em http://hamala.se/forums/viewtopic.php?t=20
 // **********************************************************************
 void Mouse(int button,int state,int x,int y)
 {
@@ -549,31 +549,31 @@ int  main ( int argc, char** argv )
     // que aparecera na barra de titulo da janela.
     glutCreateWindow    ( "Poligonos em OpenGL" );
 
-    // executa algumas inicializaÁıes
+    // executa algumas inicializaÔøΩÔøΩes
     init ();
 
     // Define que o tratador de evento para
     // o redesenho da tela. A funcao "display"
-    // ser· chamada automaticamente quando
-    // for necess·rio redesenhar a janela
+    // serÔøΩ chamada automaticamente quando
+    // for necessÔøΩrio redesenhar a janela
     glutDisplayFunc ( display );
 
     // Define que o tratador de evento para
-    // o invalidação da tela. A funcao "display"
-    // ser· chamada automaticamente sempre que a
-    // máquina estiver ociosa (idle)
+    // o invalidaÔøΩÔøΩo da tela. A funcao "display"
+    // serÔøΩ chamada automaticamente sempre que a
+    // mÔøΩquina estiver ociosa (idle)
     glutIdleFunc(animate);
 
     // Define que o tratador de evento para
     // o redimensionamento da janela. A funcao "reshape"
-    // ser· chamada automaticamente quando
-    // o usu·rio alterar o tamanho da janela
+    // serÔøΩ chamada automaticamente quando
+    // o usuÔøΩrio alterar o tamanho da janela
     glutReshapeFunc ( reshape );
 
     // Define que o tratador de evento para
     // as teclas. A funcao "keyboard"
-    // ser· chamada automaticamente sempre
-    // o usu·rio pressionar uma tecla comum
+    // serÔøΩ chamada automaticamente sempre
+    // o usuÔøΩrio pressionar uma tecla comum
     glutKeyboardFunc ( keyboard );
 
     glutMouseFunc(Mouse);
