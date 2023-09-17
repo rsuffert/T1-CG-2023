@@ -29,7 +29,7 @@ using namespace std;
 enum {
     Aquamarine,
     BlueViolet,
-    Brown,
+    Green,
     CadetBlue,
     Coral,
     CornflowerBlue,

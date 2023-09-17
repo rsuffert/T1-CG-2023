@@ -38,6 +38,7 @@ using namespace std;
 #include "Ponto.h"
 #include "Poligono.h"
 #include "DiagramaVoronoi.h"
+#include "Envelope.h"
 
 #include "ListaDeCoresRGB.h"
 
@@ -46,7 +47,7 @@ using namespace std;
 string colorNames[] = {
     "Aquamarine",
     "BlueViolet",
-    "Brown",
+    "Green",
     "CadetBlue",
     "Coral",
     "CornflowerBlue",
@@ -350,7 +351,7 @@ string concavePolygonInclusion(int* counter)
 {
     int i = 0; // polygon index (TODO: implement logic to find this out)
 	*counter = 0;
-    return colorNames[i*2]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
+    return "TODO " + colorNames[i*2]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
 }
 
 /**
@@ -360,9 +361,31 @@ string concavePolygonInclusion(int* counter)
 */
 string convexPolygonInclusion(int* counter)
 {
+    
+    int NcallsToProdVet = 0; // Inicialize um contador para acompanhar as chamadas de função
     int i = 0; // polygon index (TODO: implement logic to find this out)
-	*counter = 0;
-    return colorNames[i*2]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
+
+        for (i = 0; i < Voro.getNPoligonos(); i++) // Itera sobre todos os polígonos
+        {
+            Poligono poligono = Voro.getPoligono(i); // Obtém o polígono atual
+            Envelope enve = Voro.getEnvelope(i); //Obtém o ennvelope desse poligno
+            
+            if (enve.pontoEstaDentro(movingPoint))
+            {
+                // Verifica se o ponto está dentro do polígono atual
+                if (poligono.ponto_Dentro_Poligno(movingPoint, &NcallsToProdVet))
+                {
+                    *counter = NcallsToProdVet;
+
+                    std::cout << "$" << i << std::endl;
+                    return "TODO " + colorNames[i*2]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
+                }
+            }
+        }
+        *counter = NcallsToProdVet;
+        return "Out Of Bounds"; // Retorna uma mensagem se o ponto não estiver em nenhum polígono
+
+
 }
 
 /**
@@ -376,7 +399,7 @@ string convexVoronoiNeighborInclusion(int* counter)
 {
     int i = 0; // polygon index (TODO: implement logic to find this out)
 	*counter = 0;
-    return colorNames[i*2]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
+    return "TODO " + colorNames[i*2]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
 }
 
 // **********************************************************************

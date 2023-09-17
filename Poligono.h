@@ -48,6 +48,9 @@ public:
     void LePoligono(const char *nome);
     void desenhaAresta(int n);
     void getAresta(int i, Ponto &P1, Ponto &P2);
+    bool ponto_A_Esq_Aresta(Ponto ponto, Ponto arestaP1, Ponto arestaP2);
+    bool ponto_Dentro_Poligno(Ponto ponto, int* cont);
+
 
 };
 
