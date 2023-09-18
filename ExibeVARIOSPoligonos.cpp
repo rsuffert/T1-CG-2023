@@ -222,7 +222,12 @@ int findCurrentPolygonConvexAlgorithm(int& callsToProdVetorial)
         if (enve.pontoEstaDentro(movingPoint)) // if the point is in the envelope
         {
             Poligono poligono = Voro.getPoligono(i);
-            if (poligono.ponto_Dentro_Poligno(movingPoint, &NcallsToProdVet)) // if the point is in the polygon
+
+            Ponto ep1, ep2;
+            int auxCont;
+            bool pointInPolygon = poligono.ponto_Dentro_Poligno(movingPoint, &auxCont, ep1, ep2);
+            NcallsToProdVet+=auxCont;
+            if (pointInPolygon) // if the point is in the polygon
             {
                 // we have found the polygon
                 callsToProdVetorial = NcallsToProdVet;
@@ -411,9 +416,16 @@ string convexPolygonInclusion(int* counter)
 */
 string convexVoronoiNeighborInclusion(int* counter)
 {
-    int i = 0; // polygon index (TODO: implement logic to find this out)
-	*counter = 0;
-    return "TODO " + colorNames[i*2]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
+    int callsToProdVetorial;
+    Poligono currentPol = Voro.getPoligono(currentPolygonIdx);
+    Ponto crossedEP1, crossedEP2;
+    if (!currentPol.ponto_Dentro_Poligno(movingPoint, &callsToProdVetorial, crossedEP1, crossedEP2))
+    {
+        if (crossedEP1.neighborIdx < 0) return "Out of bounds";
+        currentPolygonIdx = crossedEP1.neighborIdx;
+    }
+    *counter = callsToProdVetorial;
+    return colorNames[currentPolygonIdx*2]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
 }
 
 // **********************************************************************
@@ -500,15 +512,15 @@ void keyboard ( unsigned char key, int x, int y )
     {
         int concaveAlgoCounter;
 		int convexAlgoCounter;
-        int voroNeighborAlgoCounter;
+        //int voroNeighborAlgoCounter;
         string concaveAlgoResult      = concavePolygonInclusion(&concaveAlgoCounter);
 		string convexAlgoResult       = convexPolygonInclusion(&convexAlgoCounter);
-        string voroNeighborAlgoResult = convexVoronoiNeighborInclusion(&voroNeighborAlgoCounter);
+        //string voroNeighborAlgoResult = convexVoronoiNeighborInclusion(&voroNeighborAlgoCounter);
 
         cout << "\n-----------------------------------------------------------------------------------------------------------------------" << endl;
         printf("CONCAVE INCLUSION:          %-15s (%d calls to HaInterseccao).\n", concaveAlgoResult.c_str(),      concaveAlgoCounter);
         printf("CONVEX INCLUSION:           %-15s (%d calls to ProdVetorial).\n",  convexAlgoResult.c_str(),       convexAlgoCounter);
-        printf("VORONOI NEIGHBOR INCLUSION: %-15s (%d calls to ProdVetorial).\n",  voroNeighborAlgoResult.c_str(), voroNeighborAlgoCounter);
+        //printf("VORONOI NEIGHBOR INCLUSION: %-15s (%d calls to ProdVetorial).\n",  voroNeighborAlgoResult.c_str(), voroNeighborAlgoCounter);
         cout << "-----------------------------------------------------------------------------------------------------------------------" << endl;
 	}
 }

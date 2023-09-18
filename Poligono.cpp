@@ -14,7 +14,7 @@ using namespace std;
 
 Poligono::Poligono()
 {
-    
+
 }
 
 void Poligono::insereVertice(Ponto p)
@@ -72,7 +72,7 @@ unsigned long Poligono::getNVertices()
 void Poligono::obtemLimites(Ponto &Min, Ponto &Max)
 {
     Max = Min = Vertices[0];
-    
+
     for (int i=0; i<Vertices.size(); i++)
     {
         Min = ObtemMinimo (Vertices[i], Min);
@@ -96,7 +96,7 @@ void Poligono::LePoligono(const char *nome)
     string S;
     //int nLinha = 0;
     unsigned int qtdVertices;
-    
+
     input >> qtdVertices;  // arq << qtdVertices
 
     for (int i=0; i< qtdVertices; i++)
@@ -140,7 +140,7 @@ bool Poligono::ponto_A_Esq_Aresta(Ponto ponto, Ponto A1, Ponto A2)
     return (p.z < 0);//retorna verdadeiro se o ponto estiver a esquerda da aresta
 }
 
-bool Poligono::ponto_Dentro_Poligno(Ponto ponto, int* cont)
+bool Poligono::ponto_Dentro_Poligno(Ponto ponto, int* cont, Ponto& crossedEdgePoint1, Ponto& crossedEdgePoint2)
 {
 //    int contador =0;
 //
@@ -167,9 +167,9 @@ bool Poligono::ponto_Dentro_Poligno(Ponto ponto, int* cont)
 //
 //        // O ponto está do mesmo lado de todas as arestas.
 //        return true;
-    
-    
-    
+
+
+
     int numVertices = Vertices.size();
     int contador = 0; // Conta o número de arestas que o ponto está à esquerda
     for (int i = 0; i < numVertices; i++)
@@ -179,6 +179,8 @@ bool Poligono::ponto_Dentro_Poligno(Ponto ponto, int* cont)
         contador ++;
         if (!ponto_A_Esq_Aresta(ponto, A1, A2))
         {
+            crossedEdgePoint1 = A1;
+            crossedEdgePoint2 = A2;
             *cont = contador;
             return false;//se tiver algum ponto do lado contrario, entao nao esta nele
         }

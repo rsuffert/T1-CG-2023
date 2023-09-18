@@ -49,7 +49,7 @@ public:
     void desenhaAresta(int n);
     void getAresta(int i, Ponto &P1, Ponto &P2);
     bool ponto_A_Esq_Aresta(Ponto ponto, Ponto arestaP1, Ponto arestaP2);
-    bool ponto_Dentro_Poligno(Ponto ponto, int* cont);
+    bool ponto_Dentro_Poligno(Ponto ponto, int* cont, Ponto& edgePoint1, Ponto& edgePoint2);
 };
 
 #endif
