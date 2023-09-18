@@ -16,7 +16,6 @@ class Ponto {
 
 public:
     float x,y,z;
-    int neighborIdx;
     Ponto ();
     Ponto(float x, float y, float z=0);
     void set(float x, float y, float z=0);

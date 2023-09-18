@@ -223,15 +223,15 @@ int findCurrentPolygonConvexAlgorithm(int& callsToProdVetorial)
         {
             Poligono poligono = Voro.getPoligono(i);
 
-            Ponto ep1, ep2;
+            int crossedEdgeIdx;
             int auxCont;
-            bool pointInPolygon = poligono.ponto_Dentro_Poligno(movingPoint, &auxCont, ep1, ep2);
+            bool pointInPolygon = poligono.ponto_Dentro_Poligno(movingPoint, &auxCont, crossedEdgeIdx);
             NcallsToProdVet+=auxCont;
             if (pointInPolygon) // if the point is in the polygon
             {
                 // we have found the polygon
                 callsToProdVetorial = NcallsToProdVet;
-                cout << "Poligno atual (i): " << i << std::endl;
+                cout << "Poligno atual (CONVEX ALGORITHM DEBUG) (i): " << i << "\n" << endl;
                 return i;
             }
         }
@@ -256,8 +256,8 @@ void init()
 
     // initialize the moving point
     glColor3b(255, 0, 0);
-    movingPoint.x = (Min.x+Max.x)/2;
-    movingPoint.y = (Min.y+Max.y)/2;
+    movingPoint.x = (Min.x+Max.x)/2 + 2;
+    movingPoint.y = (Min.y+Max.y)/2 + 2;
     movingPoint.z = (Min.z+Max.z)/2;
 
     CoresDosPoligonos = new int[Voro.getNPoligonos()];
@@ -418,12 +418,22 @@ string convexVoronoiNeighborInclusion(int* counter)
 {
     int callsToProdVetorial;
     Poligono currentPol = Voro.getPoligono(currentPolygonIdx);
-    Ponto crossedEP1, crossedEP2;
-    if (!currentPol.ponto_Dentro_Poligno(movingPoint, &callsToProdVetorial, crossedEP1, crossedEP2))
+    int crossedEdgeIdx;
+    cout << "=============CONVEX VORONOI ALGORITHM DEBUG==============" << endl;
+    cout << "Checking if we're still in polygon " << currentPolygonIdx << endl;
+    for(int i=0; i<currentPol.getNNeighbors(); i++)
     {
-        if (crossedEP1.neighborIdx < 0) return "Out of bounds";
-        currentPolygonIdx = crossedEP1.neighborIdx;
+        cout << "      Neighbor " << i << ": " << currentPol.getNeighborPolygonIdx(i) << endl;
     }
+    if (!currentPol.ponto_Dentro_Poligno(movingPoint, &callsToProdVetorial, crossedEdgeIdx))
+    {
+        cout << "We have left the polygon. Edge crossed: " << crossedEdgeIdx << endl;
+        if (crossedEdgeIdx<0 || crossedEdgeIdx >= currentPol.getNNeighbors()) return "Out of bounds";
+        cout << "New polygon: " << currentPol.getNeighborPolygonIdx(crossedEdgeIdx) << endl;
+        currentPolygonIdx = currentPol.getNeighborPolygonIdx(crossedEdgeIdx);
+    }
+    else cout << "Yes, we are." << endl;
+    cout << "=========================================================\n" << endl;
     *counter = callsToProdVetorial;
     return colorNames[currentPolygonIdx*2]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
 }
@@ -512,15 +522,15 @@ void keyboard ( unsigned char key, int x, int y )
     {
         int concaveAlgoCounter;
 		int convexAlgoCounter;
-        //int voroNeighborAlgoCounter;
+        int voroNeighborAlgoCounter;
         string concaveAlgoResult      = concavePolygonInclusion(&concaveAlgoCounter);
 		string convexAlgoResult       = convexPolygonInclusion(&convexAlgoCounter);
-        //string voroNeighborAlgoResult = convexVoronoiNeighborInclusion(&voroNeighborAlgoCounter);
+        string voroNeighborAlgoResult = convexVoronoiNeighborInclusion(&voroNeighborAlgoCounter);
 
         cout << "\n-----------------------------------------------------------------------------------------------------------------------" << endl;
         printf("CONCAVE INCLUSION:          %-15s (%d calls to HaInterseccao).\n", concaveAlgoResult.c_str(),      concaveAlgoCounter);
         printf("CONVEX INCLUSION:           %-15s (%d calls to ProdVetorial).\n",  convexAlgoResult.c_str(),       convexAlgoCounter);
-        //printf("VORONOI NEIGHBOR INCLUSION: %-15s (%d calls to ProdVetorial).\n",  voroNeighborAlgoResult.c_str(), voroNeighborAlgoCounter);
+        printf("VORONOI NEIGHBOR INCLUSION: %-15s (%d calls to ProdVetorial).\n",  voroNeighborAlgoResult.c_str(), voroNeighborAlgoCounter);
         cout << "-----------------------------------------------------------------------------------------------------------------------" << endl;
 	}
 }

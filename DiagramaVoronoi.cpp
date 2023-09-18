@@ -75,7 +75,7 @@ void Voronoi::LePoligonos(const char *nome)
     cout << "LOADING THE NEIGHBORS OF THE EDGES" << endl;
     for (int p=0; p<qtdDePoligonos; p++) // for each polygon
     {
-        Poligono pol = Diagrama[p];
+        Poligono& pol = this->getPoligono(p);
         cout << "Poligono: " << p << endl;
         for (int e=0; e<pol.getNVertices(); e++) // for each edge
         {
@@ -84,10 +84,11 @@ void Voronoi::LePoligonos(const char *nome)
             // find the edge's neighbor index and initialize it
             int neighborIdx = this->findNeighbor(p, ep1, ep2);
             //if (neighborIdx < 0) throw runtime_error("Could not find neighbor of some edge of polygon " + p);
-            ep1.neighborIdx = neighborIdx;
-            cout << "Neighbor of edge " << e << " : " << ep1.neighborIdx << endl;
+            pol.addNeighborPolygon(neighborIdx);
+            cout << "Neighbor of edge " << e << " : " << pol.getNeighborPolygonIdx(e) << endl;
         }
     }
+
     cout << "Lista de Poligonos lida com sucesso! Criados " << qtdDePoligonos << "poligonos." << endl;
 }
 
@@ -114,7 +115,7 @@ int Voronoi::findNeighbor(int polygonIdx, Ponto edgePoint1, Ponto edgePoint2)
     return -1;
 }
 
-Poligono Voronoi::getPoligono(int i)
+Poligono& Voronoi::getPoligono(int i)
 {
     if (i >= qtdDePoligonos)
     {

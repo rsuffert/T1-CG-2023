@@ -7,6 +7,7 @@
 //
 #include <iostream>
 #include <fstream>
+#include <stdexcept>
 using namespace std;
 
 #include "Poligono.h"
@@ -140,7 +141,7 @@ bool Poligono::ponto_A_Esq_Aresta(Ponto ponto, Ponto A1, Ponto A2)
     return (p.z < 0);//retorna verdadeiro se o ponto estiver a esquerda da aresta
 }
 
-bool Poligono::ponto_Dentro_Poligno(Ponto ponto, int* cont, Ponto& crossedEdgePoint1, Ponto& crossedEdgePoint2)
+bool Poligono::ponto_Dentro_Poligno(Ponto ponto, int* cont, int& crossedEdgeIdx)
 {
 //    int contador =0;
 //
@@ -179,8 +180,7 @@ bool Poligono::ponto_Dentro_Poligno(Ponto ponto, int* cont, Ponto& crossedEdgePo
         contador ++;
         if (!ponto_A_Esq_Aresta(ponto, A1, A2))
         {
-            crossedEdgePoint1 = A1;
-            crossedEdgePoint2 = A2;
+            crossedEdgeIdx = i;
             *cont = contador;
             return false;//se tiver algum ponto do lado contrario, entao nao esta nele
         }
@@ -190,3 +190,17 @@ bool Poligono::ponto_Dentro_Poligno(Ponto ponto, int* cont, Ponto& crossedEdgePo
 
 }
 
+void Poligono::addNeighborPolygon(int neighborPolygonIdx)
+{
+    this->neighbors.push_back(neighborPolygonIdx);
+}
+
+int Poligono::getNeighborPolygonIdx(int pos)
+{
+    return this->neighbors.at(pos);
+}
+
+int Poligono::getNNeighbors()
+{
+    return this->neighbors.size();
+}

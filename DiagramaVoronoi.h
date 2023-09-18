@@ -27,7 +27,7 @@ public:
     Voronoi();
     Poligono LeUmPoligono();
     void LePoligonos(const char *nome);
-    Poligono getPoligono(int i);
+    Poligono& getPoligono(int i);
     void obtemLimites(Ponto &min, Ponto &max);
     unsigned int getNPoligonos();
 	Envelope getEnvelope(int i);
