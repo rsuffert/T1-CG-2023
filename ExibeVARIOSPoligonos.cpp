@@ -159,6 +159,8 @@ Ponto movingPoint;     // point that the user will move around in the screen
 int currentPolygonIdx; // index of the polygon in which the movingPoint is currently located
 Ponto voroMin, voroMax;
 
+Ponto extremeLeftPoint;
+
 // **********************************************************************
 //
 // **********************************************************************
@@ -277,6 +279,8 @@ void init()
     int counter;
     currentPolygonIdx = findCurrentPolygonConvexAlgorithm(counter);
 
+    extremeLeftPoint.x = Min.x;
+    
     Voro.obtemLimites(voroMin, voroMax);
 }
 
@@ -388,9 +392,31 @@ void drawPoint(Ponto p, int size)
 */
 string concavePolygonInclusion(int* counter)
 {
-    int i = 0; // polygon index (TODO: implement logic to find this out)
-	*counter = 0;
-    return "TODO " + colorNames[i*2]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
+    int currentPol = -1; // index of the current polygon
+    int callsToHaInterseccao = 0;
+    for (int i=0; i<Voro.getNPoligonos(); i++) // for each polygon
+    {
+        int intersectionCont = 0;
+        if (Voro.getEnvelope(i).pontoEstaDentro(movingPoint)) {
+            Poligono poli = Voro.getPoligono(i);
+            for(int j=0; j<poli.getNVertices(); j++) // for each edge
+            {
+                Ponto P1, P2;
+                poli.getAresta(j, P1, P2);
+                callsToHaInterseccao++;
+                if (HaInterseccao(extremeLeftPoint, movingPoint, P1, P2)) intersectionCont++;
+            }
+            if (intersectionCont % 2 != 0) // if number of intersections if odd
+            {
+                currentPol = i;
+                break;
+            }
+        }
+    }
+	*counter = callsToHaInterseccao;
+    
+    if (currentPol<0) return "Out of bound";
+    else              return colorNames[currentPol*2]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
 }
 
 /**
@@ -517,6 +543,8 @@ void keyboard ( unsigned char key, int x, int y )
         case 'd': if (movingPoint.x + 0.1 < voroMax.x) movingPoint.x+=0.1; break;
 		default:  movementApplied = false;                                 break;
 	}
+    
+    extremeLeftPoint.y = movingPoint.y;
 
 	if (movementApplied) // apply inclusion algorithms
     {
