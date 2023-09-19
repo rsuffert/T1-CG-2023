@@ -47,7 +47,7 @@ using namespace std;
 string colorNames[] = {
     "Aquamarine",
     "BlueViolet",
-    "Green",
+    "Brown",
     "CadetBlue",
     "Coral",
     "CornflowerBlue",
