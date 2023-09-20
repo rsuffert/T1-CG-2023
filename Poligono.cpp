@@ -130,64 +130,33 @@ void Poligono::desenhaAresta(int n)
     glEnd();
 }
 
-bool Poligono::ponto_A_Esq_Aresta(Ponto ponto, Ponto A1, Ponto A2)
+bool Poligono::pontoAEsquerdaAresta(Ponto ponto, Ponto A1, Ponto A2)
 {
     Ponto vetorAresta = A2 - A1;
     Ponto vetorPonto = ponto - A1;
-
     Ponto p;
     ProdVetorial(vetorAresta, vetorPonto, p);
-
-    return (p.z < 0);//retorna verdadeiro se o ponto estiver a esquerda da aresta
+    return p.z < 0; //retorna verdadeiro se o ponto estiver a esquerda da aresta
 }
 
-bool Poligono::ponto_Dentro_Poligno(Ponto ponto, int* cont, int& crossedEdgeIdx)
+bool Poligono::pontoDentroPoligno(Ponto ponto, int& cont, int& crossedEdgeIdx)
 {
-//    int contador =0;
-//
-//    // Verifica se o ponto está do mesmo lado de todas as outras arestas
-//    for (int i = 0; i < Vertices.size()-1; i++)
-//    {
-//        bool ladoAtual;
-//
-//        if(i+2 <= Vertices.size())
-//        {
-//            Ponto A, B;
-//            getAresta(i, A, B);
-//            contador ++;
-//            ladoAtual = ponto_A_Esq_Aresta(ponto, A,B);
-//
-//            if (ladoAtual== false)
-//                return false;
-//
-//        }
-//
-//    }
-//
-//        *cont = contador;
-//
-//        // O ponto está do mesmo lado de todas as arestas.
-//        return true;
-
-
-
     int numVertices = Vertices.size();
-    int contador = 0; // Conta o número de arestas que o ponto está à esquerda
+    int contadorChamadasProdVet = 0;
     for (int i = 0; i < numVertices; i++)
     {
         Ponto A1 = Vertices[i];
         Ponto A2 = Vertices[(i + 1) % numVertices]; // Próximo vértice (faz loop no último vértice)
-        contador ++;
-        if (!ponto_A_Esq_Aresta(ponto, A1, A2))
+        contadorChamadasProdVet++;
+        if (!pontoAEsquerdaAresta(ponto, A1, A2))
         {
             crossedEdgeIdx = i;
-            *cont = contador;
-            return false;//se tiver algum ponto do lado contrario, entao nao esta nele
+            cont = contadorChamadasProdVet;
+            return false; //se tiver algum ponto do lado contrario, entao nao esta nele
         }
     }
-    *cont = contador;
+    cont = contadorChamadasProdVet;
     return true;
-
 }
 
 void Poligono::addNeighborPolygon(int neighborPolygonIdx)

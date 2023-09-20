@@ -49,8 +49,8 @@ public:
     void LePoligono(const char *nome);
     void desenhaAresta(int n);
     void getAresta(int i, Ponto &P1, Ponto &P2);
-    bool ponto_A_Esq_Aresta(Ponto ponto, Ponto arestaP1, Ponto arestaP2);
-    bool ponto_Dentro_Poligno(Ponto ponto, int* cont, int& crossedEdgeIdx);
+    bool pontoAEsquerdaAresta(Ponto ponto, Ponto arestaP1, Ponto arestaP2);
+    bool pontoDentroPoligno(Ponto ponto, int& cont, int& crossedEdgeIdx);
     void addNeighborPolygon(int neighborPolygonIdx);
     int getNeighborPolygonIdx(int pos);
     int getNNeighbors();

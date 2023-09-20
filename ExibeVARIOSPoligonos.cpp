@@ -155,11 +155,11 @@ bool desenha = false;
 bool FoiClicado = false;
 
 float angulo=0.0;
+
 Ponto movingPoint;     // point that the user will move around in the screen
 int currentPolygonIdx; // index of the polygon in which the movingPoint is currently located
 Ponto voroMin, voroMax;
-
-Ponto extremeLeftPoint;
+Ponto extremeLeftPoint; // used for generating a straight line from the left border of the diagram to the moving point
 
 // **********************************************************************
 //
@@ -227,13 +227,13 @@ int findCurrentPolygonConvexAlgorithm(int& callsToProdVetorial)
 
             int crossedEdgeIdx;
             int auxCont;
-            bool pointInPolygon = poligono.ponto_Dentro_Poligno(movingPoint, &auxCont, crossedEdgeIdx);
+            bool pointInPolygon = poligono.pontoDentroPoligno(movingPoint, auxCont, crossedEdgeIdx);
             NcallsToProdVet+=auxCont;
             if (pointInPolygon) // if the point is in the polygon
             {
                 // we have found the polygon
                 callsToProdVetorial = NcallsToProdVet;
-                cout << "Poligno atual (CONVEX ALGORITHM DEBUG) (i): " << i << "\n" << endl;
+                //cout << "Poligno atual (CONVEX ALGORITHM DEBUG) (i): " << i << "\n" << endl;
                 return i;
             }
         }
@@ -280,7 +280,7 @@ void init()
     currentPolygonIdx = findCurrentPolygonConvexAlgorithm(counter);
 
     extremeLeftPoint.x = Min.x;
-    
+
     Voro.obtemLimites(voroMin, voroMax);
 }
 
@@ -390,32 +390,32 @@ void drawPoint(Ponto p, int size)
 * @param counter a pointer to the variable where the information on how many times the calculation method has been called should be stored.
 * @return the color of the polygon where the point is.
 */
-string concavePolygonInclusion(int* counter)
+string concavePolygonInclusion(int& counter)
 {
-    int currentPol = -1; // index of the current polygon
-    int callsToHaInterseccao = 0;
+    int currentPol = -1;          // index of the polygon
+    int callsToHaInterseccao = 0; // calls to calculation function
+
     for (int i=0; i<Voro.getNPoligonos(); i++) // for each polygon
     {
-        int intersectionCont = 0;
-        if (Voro.getEnvelope(i).pontoEstaDentro(movingPoint)) {
+        if (Voro.getEnvelope(i).pontoEstaDentro(movingPoint)) { // if the moving point is in its envelope
+            int intersectionCont = 0;
             Poligono poli = Voro.getPoligono(i);
-            for(int j=0; j<poli.getNVertices(); j++) // for each edge
+            for(int j=0; j<poli.getNVertices(); j++) // iterate over the edges of the polygon, counting how many edges are intercepted by the horizontal line
             {
                 Ponto P1, P2;
                 poli.getAresta(j, P1, P2);
                 callsToHaInterseccao++;
                 if (HaInterseccao(extremeLeftPoint, movingPoint, P1, P2)) intersectionCont++;
             }
-            if (intersectionCont % 2 != 0) // if number of intersections if odd
+            if (intersectionCont % 2 != 0) // if number of intersections is odd, the point is in the polygon
             {
                 currentPol = i;
                 break;
             }
         }
     }
-	*counter = callsToHaInterseccao;
-    
-    if (currentPol<0) return "Out of bound";
+	counter = callsToHaInterseccao;
+    if (currentPol<0) return "Out of bounds";
     else              return colorNames[currentPol*2]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
 }
 
@@ -424,11 +424,11 @@ string concavePolygonInclusion(int* counter)
 * @param counter a pointer to the variable where the information on how many times the calculation method has been called should be stored.
 * @return the color of the polygon where the point is.
 */
-string convexPolygonInclusion(int* counter)
+string convexPolygonInclusion(int& counter)
 {
-    int NcallsToProdVet; // Inicialize um contador para acompanhar as chamadas de fun��o
+    int NcallsToProdVet;
     int polygonIdx = findCurrentPolygonConvexAlgorithm(NcallsToProdVet);
-    *counter = NcallsToProdVet;
+    counter = NcallsToProdVet;
     if (polygonIdx < 0) return "Out of bounds";
     else                return colorNames[polygonIdx*2];
 }
@@ -440,27 +440,11 @@ string convexPolygonInclusion(int* counter)
 * @param counter a pointer to the variable where the information on how many times the calculation method has been called should be stored.
 * @return the color of the polygon where the point is.
 */
-string convexVoronoiNeighborInclusion(int* counter)
+string convexVoronoiNeighborInclusion(int& counter, int crossedEdgeIdx)
 {
-    int callsToProdVetorial;
-    Poligono currentPol = Voro.getPoligono(currentPolygonIdx);
-    int crossedEdgeIdx;
-    cout << "=============CONVEX VORONOI ALGORITHM DEBUG==============" << endl;
-    cout << "Checking if we're still in polygon " << currentPolygonIdx << endl;
-    for(int i=0; i<currentPol.getNNeighbors(); i++)
-    {
-        cout << "      Neighbor " << i << ": " << currentPol.getNeighborPolygonIdx(i) << endl;
-    }
-    if (!currentPol.ponto_Dentro_Poligno(movingPoint, &callsToProdVetorial, crossedEdgeIdx))
-    {
-        cout << "We have left the polygon. Edge crossed: " << crossedEdgeIdx << endl;
-        if (crossedEdgeIdx<0 || crossedEdgeIdx >= currentPol.getNNeighbors()) return "Out of bounds";
-        cout << "New polygon: " << currentPol.getNeighborPolygonIdx(crossedEdgeIdx) << endl;
-        currentPolygonIdx = currentPol.getNeighborPolygonIdx(crossedEdgeIdx);
-    }
-    else cout << "Yes, we are." << endl;
-    cout << "=========================================================\n" << endl;
-    *counter = callsToProdVetorial;
+    Poligono prevPol = Voro.getPoligono(currentPolygonIdx);
+    currentPolygonIdx = prevPol.getNeighborPolygonIdx(crossedEdgeIdx);
+    counter = 0;
     return colorNames[currentPolygonIdx*2]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
 }
 
@@ -529,6 +513,38 @@ void ContaTempo(double tempo)
         }
     }
 }
+
+void calculateInclusion()
+{
+    cout << "\n-----------------------------------------------------------------------------------------------------------------------" << endl;
+
+	// check if we have left the current polygon
+	Poligono currentPolygon = Voro.getPoligono(currentPolygonIdx);
+	int callsToProdVet=0, crossedEdgeIdx=0;
+	bool stillInCurrent = currentPolygon.pontoDentroPoligno(movingPoint, callsToProdVet, crossedEdgeIdx);
+	printf("Called ProdVetorial %d times to find out whether or not the point is still in the current polygon.\n", callsToProdVet);
+	if (stillInCurrent)
+	{
+		cout << "We're still in the same polygon. No further actions will be taken." << endl;
+	}
+    else
+    {
+        cout << "We have left the polygon. Calling calculation algorithms..." << endl;
+        int concaveAlgoCounter, convexAlgoCounter, voroNeighborAlgoCounter;
+        string concaveAlgoRes = concavePolygonInclusion(concaveAlgoCounter);
+        string convexAlgoRes = convexPolygonInclusion(convexAlgoCounter);
+        string voroAlgoRes = convexVoronoiNeighborInclusion(voroNeighborAlgoCounter, crossedEdgeIdx);
+        printf("\tCONCAVE INCLUSION:          %-15s (%d calls to HaInterseccao).\n",
+                        concaveAlgoRes.c_str(), concaveAlgoCounter);
+        printf("\tCONVEX INCLUSION:           %-15s (%d calls to ProdVetorial).\n",
+                        convexAlgoRes.c_str(),  convexAlgoCounter);
+        printf("\tVORONOI NEIGHBOR INCLUSION: %-15s (%d calls to ProdVetorial).\n",
+                        voroAlgoRes.c_str(),    voroNeighborAlgoCounter);
+    }
+
+	cout << "-----------------------------------------------------------------------------------------------------------------------" << endl;
+}
+
 // **********************************************************************
 //  void keyboard ( unsigned char key, int x, int y )
 // **********************************************************************
@@ -543,25 +559,12 @@ void keyboard ( unsigned char key, int x, int y )
         case 'd': if (movingPoint.x + 0.1 < voroMax.x) movingPoint.x+=0.1; break;
 		default:  movementApplied = false;                                 break;
 	}
-    
+
     extremeLeftPoint.y = movingPoint.y;
 
-	if (movementApplied) // apply inclusion algorithms
-    {
-        int concaveAlgoCounter;
-		int convexAlgoCounter;
-        int voroNeighborAlgoCounter;
-        string concaveAlgoResult      = concavePolygonInclusion(&concaveAlgoCounter);
-		string convexAlgoResult       = convexPolygonInclusion(&convexAlgoCounter);
-        string voroNeighborAlgoResult = convexVoronoiNeighborInclusion(&voroNeighborAlgoCounter);
-
-        cout << "\n-----------------------------------------------------------------------------------------------------------------------" << endl;
-        printf("CONCAVE INCLUSION:          %-15s (%d calls to HaInterseccao).\n", concaveAlgoResult.c_str(),      concaveAlgoCounter);
-        printf("CONVEX INCLUSION:           %-15s (%d calls to ProdVetorial).\n",  convexAlgoResult.c_str(),       convexAlgoCounter);
-        printf("VORONOI NEIGHBOR INCLUSION: %-15s (%d calls to ProdVetorial).\n",  voroNeighborAlgoResult.c_str(), voroNeighborAlgoCounter);
-        cout << "-----------------------------------------------------------------------------------------------------------------------" << endl;
-	}
+	calculateInclusion();
 }
+
 // **********************************************************************
 // Esta fun��o captura o clique do botao direito do mouse sobre a �rea de
 // desenho e converte a coordenada para o sistema de refer�ncia definido
