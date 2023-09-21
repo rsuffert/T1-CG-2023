@@ -17,6 +17,7 @@
 #include <ctime>
 #include <fstream>
 #include <stdlib.h>
+#include <string>
 
 using namespace std;
 
@@ -242,6 +243,7 @@ int findCurrentPolygonConvexAlgorithm(int& callsToProdVetorial)
     return -1;
 }
 
+float movementStepX, movementStepY;
 // **********************************************************************
 //
 // **********************************************************************
@@ -280,6 +282,10 @@ void init()
     currentPolygonIdx = findCurrentPolygonConvexAlgorithm(counter);
 
     extremeLeftPoint.x = Min.x;
+
+    // each step of the point will measure 0.5% of the lenght of the diagram
+    movementStepX = (Max.x-Min.x) * 0.005;
+    movementStepY = (Max.y-Min.y) * 0.005;
 
     Voro.obtemLimites(voroMin, voroMax);
 }
@@ -485,7 +491,6 @@ void display( void )
         P = Voro.getPoligono(i);
         P.desenhaPoligono();
     }
-
     drawPoint(movingPoint, 7);
 
     glutSwapBuffers();
@@ -553,10 +558,10 @@ void keyboard ( unsigned char key, int x, int y )
     bool movementApplied = true;
 	switch ( key )
 	{
-        case 'w': if (movingPoint.y + 0.1 < voroMax.y) movingPoint.y+=0.1; break;
-        case 'a': if (movingPoint.x - 0.1 > voroMin.x) movingPoint.x-=0.1; break;
-        case 's': if (movingPoint.y - 0.1 > voroMin.y) movingPoint.y-=0.1; break;
-        case 'd': if (movingPoint.x + 0.1 < voroMax.x) movingPoint.x+=0.1; break;
+        case 'w': if (movingPoint.y + movementStepY < voroMax.y) movingPoint.y+=movementStepY; break;
+        case 'a': if (movingPoint.x - movementStepX > voroMin.x) movingPoint.x-=movementStepX; break;
+        case 's': if (movingPoint.y - movementStepY > voroMin.y) movingPoint.y-=movementStepY; break;
+        case 'd': if (movingPoint.x + movementStepX < voroMax.x) movingPoint.x+=movementStepX; break;
 		default:  movementApplied = false;                                 break;
 	}
 
