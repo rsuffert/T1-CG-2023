@@ -48,7 +48,7 @@ using namespace std;
 string colorNames[] = {
     "Aquamarine",
     "BlueViolet",
-    "Brown",
+    "IndianRed",
     "CadetBlue",
     "Coral",
     "CornflowerBlue",
@@ -64,7 +64,7 @@ string colorNames[] = {
     "Gold",
     "Goldenrod",
     "GreenYellow",
-    "IndianRed",
+    "Brown",
     "Khaki",
     "LightBlue",
     "LightSteelBlue",
@@ -140,6 +140,7 @@ string colorNames[] = {
     "Light_Purple",
     "Very_Light_Purple"
 };
+const int colorsSize = 92;
 
 Temporizador T;
 double AccumDeltaT=0;
@@ -253,7 +254,7 @@ void init()
     // Define a cor do fundo da tela (AZUL)
     glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 
-    Voro.LePoligonos("ListaDePoligonos-V2.txt");
+    Voro.LePoligonos("500Polygons.txt");
     Voro.obtemLimites(Min,Max);
     Min.imprime("Minimo:", "\n");
     Max.imprime("Maximo:", "\n");
@@ -267,7 +268,7 @@ void init()
     CoresDosPoligonos = new int[Voro.getNPoligonos()];
 
     for (int i=0; i<Voro.getNPoligonos(); i++)
-        CoresDosPoligonos[i] = i*2;//rand()%80;
+        CoresDosPoligonos[i] = (i*2)%colorsSize;//rand()%80;
 
     // Ajusta a largura da janela l�gica
     // em fun��o do tamanho dos pol�gonos
@@ -421,8 +422,8 @@ string concavePolygonInclusion(int& counter)
         }
     }
 	counter = callsToHaInterseccao;
-    if (currentPol<0) return "Out of bounds";
-    else              return colorNames[currentPol*2]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
+    if (currentPol < 0) return "Out of bounds";
+    else              return colorNames[(currentPol*2)%colorsSize]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
 }
 
 /**
@@ -436,7 +437,7 @@ string convexPolygonInclusion(int& counter)
     int polygonIdx = findCurrentPolygonConvexAlgorithm(NcallsToProdVet);
     counter = NcallsToProdVet;
     if (polygonIdx < 0) return "Out of bounds";
-    else                return colorNames[polygonIdx*2];
+    else                return colorNames[(polygonIdx*2)%colorsSize];
 }
 
 /**
@@ -451,7 +452,8 @@ string convexVoronoiNeighborInclusion(int& counter, int crossedEdgeIdx)
     Poligono prevPol = Voro.getPoligono(currentPolygonIdx);
     currentPolygonIdx = prevPol.getNeighborPolygonIdx(crossedEdgeIdx);
     counter = 0;
-    return colorNames[currentPolygonIdx*2]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
+    if (currentPolygonIdx < 0) return "Out of bounds";
+    else                       return colorNames[(currentPolygonIdx*2)%colorsSize]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
 }
 
 // **********************************************************************
