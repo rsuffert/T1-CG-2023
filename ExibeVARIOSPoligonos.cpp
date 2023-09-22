@@ -191,6 +191,23 @@ void ImprimeNumeracaoDosVertices(Poligono &P)
         printString(msg,aux.x, aux.y);
     }
 }
+
+void ImprimeNroDoPoligono(Poligono P,int n)
+
+{
+    char msg[10];
+    sprintf(msg,"%d",n);
+    Ponto Soma, A;
+    for (int i=0;i<P.getNVertices();i++)
+    {
+        A = P.getVertice(i);
+        Soma = Soma + A;
+    }
+    double div = 1.0/P.getNVertices();
+    Soma = Soma * div;
+    printString(msg,Soma.x, Soma.y);
+}
+
 // **********************************************************************
 //
 // **********************************************************************
@@ -395,9 +412,10 @@ void drawPoint(Ponto p, int size)
 /**
 * Applies the concave polygon inclusion algorithm to find out if a point is inside a polygon.
 * @param counter a pointer to the variable where the information on how many times the calculation method has been called should be stored.
+* @param currentPol a pointer to the variable where the index of the polygon calculated by this method should be stored
 * @return the color of the polygon where the point is.
 */
-string concavePolygonInclusion(int& counter)
+string concavePolygonInclusion(int& counter, int& currentPolIdx)
 {
     int currentPol = -1;          // index of the polygon
     int callsToHaInterseccao = 0; // calls to calculation function
@@ -422,20 +440,23 @@ string concavePolygonInclusion(int& counter)
         }
     }
 	counter = callsToHaInterseccao;
+	currentPolIdx = currentPol;
     if (currentPol < 0) return "Out of bounds";
-    else              return colorNames[(currentPol*2)%colorsSize]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
+    else                return colorNames[(currentPol*2)%colorsSize]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
 }
 
 /**
 * Applies the convex polygon inclusion algorithm to find out if a point is inside a polygon.
 * @param counter a pointer to the variable where the information on how many times the calculation method has been called should be stored.
+* @param currentPol a pointer to the variable where the index of the polygon calculated by this method should be stored
 * @return the color of the polygon where the point is.
 */
-string convexPolygonInclusion(int& counter)
+string convexPolygonInclusion(int& counter, int& currentPolIdx)
 {
     int NcallsToProdVet;
     int polygonIdx = findCurrentPolygonConvexAlgorithm(NcallsToProdVet);
     counter = NcallsToProdVet;
+    currentPolIdx = polygonIdx;
     if (polygonIdx < 0) return "Out of bounds";
     else                return colorNames[(polygonIdx*2)%colorsSize];
 }
@@ -445,13 +466,16 @@ string convexPolygonInclusion(int& counter)
 * for each polygon edge, what polygon is on the other side of the edge. When an object crosses that line, it must be
 * in the polygon on the other side of that edge.
 * @param counter a pointer to the variable where the information on how many times the calculation method has been called should be stored.
+* @param crossedEdgeIdx the index of the edge that's been crossed, calculated by the caller method when it found out the moving point had left the current polygon
+* @param currentPol a pointer to the variable where the index of the polygon calculated by this method should be stored
 * @return the color of the polygon where the point is.
 */
-string convexVoronoiNeighborInclusion(int& counter, int crossedEdgeIdx)
+string convexVoronoiNeighborInclusion(int& counter, int crossedEdgeIdx, int& currentPolIdx)
 {
     Poligono prevPol = Voro.getPoligono(currentPolygonIdx);
     currentPolygonIdx = prevPol.getNeighborPolygonIdx(crossedEdgeIdx);
     counter = 0;
+    currentPolIdx = currentPolygonIdx;
     if (currentPolygonIdx < 0) return "Out of bounds";
     else                       return colorNames[(currentPolygonIdx*2)%colorsSize]; // multiplied by two because that's the criteria for picking the polygon colors during initialization
 }
@@ -481,11 +505,13 @@ void display( void )
 
 
     Poligono P;
+    bool shouldPrintPolIdx = Voro.getNPoligonos() < 30;
     for (int i=0; i<Voro.getNPoligonos(); i++)
     {
         defineCor(CoresDosPoligonos[i]);
         P = Voro.getPoligono(i);
         P.pintaPoligono();
+        if (shouldPrintPolIdx) ImprimeNroDoPoligono(P, i);
     }
     glColor3f(0,0,0);
     for (int i=0; i<Voro.getNPoligonos(); i++)
@@ -538,15 +564,16 @@ void calculateInclusion()
     {
         cout << "We have left the polygon. Calling calculation algorithms..." << endl;
         int concaveAlgoCounter, convexAlgoCounter, voroNeighborAlgoCounter;
-        string concaveAlgoRes = concavePolygonInclusion(concaveAlgoCounter);
-        string convexAlgoRes = convexPolygonInclusion(convexAlgoCounter);
-        string voroAlgoRes = convexVoronoiNeighborInclusion(voroNeighborAlgoCounter, crossedEdgeIdx);
-        printf("\tCONCAVE INCLUSION:          %-15s (%d calls to HaInterseccao).\n",
-                        concaveAlgoRes.c_str(), concaveAlgoCounter);
-        printf("\tCONVEX INCLUSION:           %-15s (%d calls to ProdVetorial).\n",
-                        convexAlgoRes.c_str(),  convexAlgoCounter);
-        printf("\tVORONOI NEIGHBOR INCLUSION: %-15s (%d calls to ProdVetorial).\n",
-                        voroAlgoRes.c_str(),    voroNeighborAlgoCounter);
+        int concaveAlgoPolIdx, convexAlgoPolIdx, voroNeighborAlgoPolIdx;
+        string concaveAlgoResColor = concavePolygonInclusion(concaveAlgoCounter, concaveAlgoPolIdx);
+        string convexAlgoResColor = convexPolygonInclusion(convexAlgoCounter, convexAlgoPolIdx);
+        string voroAlgoResColor = convexVoronoiNeighborInclusion(voroNeighborAlgoCounter, crossedEdgeIdx, voroNeighborAlgoPolIdx);
+        printf("\tCONCAVE INCLUSION:          %-15s (polygon %d) (%d calls to HaInterseccao).\n",
+                        concaveAlgoResColor.c_str(), concaveAlgoPolIdx,       concaveAlgoCounter);
+        printf("\tCONVEX INCLUSION:           %-15s (polygon %d) (%d calls to ProdVetorial).\n",
+                        convexAlgoResColor.c_str(),  convexAlgoPolIdx,        convexAlgoCounter);
+        printf("\tVORONOI NEIGHBOR INCLUSION: %-15s (polygon %d) (%d calls to ProdVetorial).\n",
+                        voroAlgoResColor.c_str(),    voroNeighborAlgoPolIdx,  voroNeighborAlgoCounter);
     }
 
 	cout << "-----------------------------------------------------------------------------------------------------------------------" << endl;
