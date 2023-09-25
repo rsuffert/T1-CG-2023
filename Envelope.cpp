@@ -3,6 +3,7 @@
 //  OpenGLTest
 //
 //  Created by Márcio Sarroglia Pinho on 28/08/22.
+//  Improvements by Ricardo Süffert and Vinícius Turani (added documented functions implementing the algorithms for point inclusion in concave/convex polygons)
 //  Copyright © 2022 Márcio Sarroglia Pinho. All rights reserved.
 //
 
@@ -11,7 +12,7 @@
 
 Envelope::Envelope()
 {
-    
+
 }
 Envelope::Envelope(Ponto P1, Ponto P2)
 {
@@ -45,7 +46,7 @@ void Envelope::GeraEnvelope(Ponto P1, Ponto P2)
 
     Meio = (Max+Min) * 0.5;
     MeiaLargura = (Max-Min) * 0.5;
-    
+
     // Min.imprime("Minimo: ", "\n");
     // Max.imprime("Maximo: ", "\n");
     // Meio.imprime("Meio: ", "\n");
@@ -63,7 +64,7 @@ bool Envelope::pontoEstaDentro(Ponto P)
     if (P.x > Max.x) return false;
     if (P.y < Min.y) return false;
     if (P.y > Max.y) return false;
-    
+
     return true;
 }
 void Envelope::imprime()

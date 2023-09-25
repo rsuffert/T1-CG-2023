@@ -52,7 +52,7 @@ public:
     bool pontoAEsquerdaAresta(Ponto ponto, Ponto arestaP1, Ponto arestaP2);
     bool pontoDentroPoligno(Ponto ponto, int& cont, int& crossedEdgeIdx);
     void addNeighborPolygon(int neighborPolygonIdx);
-    int getNeighborPolygonIdx(int pos);
+    int getNeighborPolygonIdx(int edgeIdx);
     int getNNeighbors();
 };
 

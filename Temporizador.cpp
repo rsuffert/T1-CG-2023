@@ -3,6 +3,7 @@
 //  Imagens
 //
 //  Created by Márcio Sarroglia Pinho on 23/03/20.
+//  Improvements by Ricardo Süffert and Vinícius Turani (added documented functions implementing the algorithms for point inclusion in concave/convex polygons)
 //  Copyright © 2020 rmd. All rights reserved.
 //
 
@@ -16,7 +17,7 @@ Temporizador::Temporizador()
 #else
     // Figure out time elapsed since last call to idle function
     gettimeofday(&start_time, NULL);
-    
+
 #endif
 
 }

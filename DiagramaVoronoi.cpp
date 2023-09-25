@@ -3,6 +3,7 @@
 //  OpenGLTest
 //
 //  Created by Márcio Sarroglia Pinho on 23/08/23.
+//  Improvements by Ricardo Süffert and Vinícius Turani (added documented functions implementing the algorithms for point inclusion in concave/convex polygons)
 //  Copyright © 2023 Márcio Sarroglia Pinho. All rights reserved.
 //
 
@@ -92,6 +93,13 @@ void Voronoi::LePoligonos(const char *nome)
     cout << "Lista de Poligonos lida com sucesso! Criados " << qtdDePoligonos << "poligonos." << endl;
 }
 
+/**
+* Finds the neighbor of a specific edge of a given polygon.
+* @param polygonIdx the index of the polygon whose neighbor we are searching.
+* @param edgePoint1 the first point that makes up the edge of the given polygon that we are investigating the neighbor.
+* @param edgePoint2 the second point that makes up the edge of the given polygon that we are investigating the neighbor.
+* @return the index of the polygon that shares the given edge with the given polygon in the diagram.
+*/
 int Voronoi::findNeighbor(int polygonIdx, Ponto edgePoint1, Ponto edgePoint2)
 {
     //cout << "Finding neighbor of polygon " << polygonIdx << endl;

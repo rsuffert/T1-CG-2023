@@ -6,6 +6,7 @@
 //
 // Marcio Sarroglia Pinho
 // pinho@pucrs.br
+//  Improvements by Ricardo Süffert and Vinícius Turani (added documented functions implementing the algorithms for point inclusion in concave/convex polygons)
 // **********************************************************************
 
 // Para uso no Xcode:
@@ -271,7 +272,7 @@ void init()
     // Define a cor do fundo da tela (AZUL)
     glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 
-    Voro.LePoligonos("500Polygons.txt");
+    Voro.LePoligonos("ListaDePoligonos-V2.txt");
     Voro.obtemLimites(Min,Max);
     Min.imprime("Minimo:", "\n");
     Max.imprime("Maximo:", "\n");
@@ -547,6 +548,9 @@ void ContaTempo(double tempo)
     }
 }
 
+/**
+* Calculates and displays the current polygon where the moving point is in using three different algorithms.
+*/
 void calculateInclusion()
 {
     cout << "\n-----------------------------------------------------------------------------------------------------------------------" << endl;
@@ -648,7 +652,7 @@ int  main ( int argc, char** argv )
 
     // Cria a janela na tela, definindo o nome da
     // que aparecera na barra de titulo da janela.
-    glutCreateWindow    ( "Poligonos em OpenGL" );
+    glutCreateWindow    ( "Inclusão de Ponto em Polígonos Côncavos com OpenGL" );
 
     // executa algumas inicializa��es
     init ();

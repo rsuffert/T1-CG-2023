@@ -3,6 +3,7 @@
 //  OpenGLTest
 //
 //  Created by Márcio Sarroglia Pinho on 18/08/20.
+//  Improvements by Ricardo Süffert and Vinícius Turani (added documented functions implementing the algorithms for point inclusion in concave/convex polygons)
 //  Copyright © 2020 Márcio Sarroglia Pinho. All rights reserved.
 //
 #include <iostream>
@@ -130,6 +131,13 @@ void Poligono::desenhaAresta(int n)
     glEnd();
 }
 
+/**
+* Tells if a given point is on the left of a given edge of this polygon.
+* @param ponto the point whose laterality is to be tested.
+* @param A1 the first point that makes up the edge to be investigated.
+* @param A2 the second point that makes up the edge to be investigated.
+* @param return true if the given point is on the left of the given edge; false if not.
+*/
 bool Poligono::pontoAEsquerdaAresta(Ponto ponto, Ponto A1, Ponto A2)
 {
     Ponto vetorAresta = A2 - A1;
@@ -139,6 +147,13 @@ bool Poligono::pontoAEsquerdaAresta(Ponto ponto, Ponto A1, Ponto A2)
     return p.z < 0; //retorna verdadeiro se o ponto estiver a esquerda da aresta
 }
 
+/**
+* Tells whether or not a given point is inside of this polygon using the vectorial product (suited for convex polygons only).
+* @param ponto the point to be tested whether or not it is in this polygon.
+* @param cont the variable to store how many times we have invoked the function that calculates the vectorial product.
+* @param crossedEdgeIdx the variable to store the index of the edge of this polygon that the moving polygon is on the right side, if it is not in the polygon.
+* @return true if the moving point is in this polygon; false if not.
+*/
 bool Poligono::pontoDentroPoligno(Ponto ponto, int& cont, int& crossedEdgeIdx)
 {
     int numVertices = Vertices.size();
@@ -159,16 +174,29 @@ bool Poligono::pontoDentroPoligno(Ponto ponto, int& cont, int& crossedEdgeIdx)
     return true;
 }
 
+/**
+* Adds a neighbor to the list of neighbors of this polygon.
+* @param neighborPolygonIdx the index of the neighbor polygon to be added.
+*/
 void Poligono::addNeighborPolygon(int neighborPolygonIdx)
 {
     this->neighbors.push_back(neighborPolygonIdx);
 }
 
-int Poligono::getNeighborPolygonIdx(int pos)
+/**
+* Returns the requested neighbor of this polygon.
+* @param edgeIdx the index of the edge whose neighbor is to be retrieved.
+* @return the index of the neighbor of the given edge.
+*/
+int Poligono::getNeighborPolygonIdx(int edgeIdx)
 {
-    return this->neighbors.at(pos);
+    return this->neighbors.at(edgeIdx);
 }
 
+/**
+* Tells how many neighbors we have stored for this polygon.
+* @return how many neighbors we have stored for this polygon.
+*/
 int Poligono::getNNeighbors()
 {
     return this->neighbors.size();

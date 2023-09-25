@@ -3,6 +3,7 @@
 //  OpenGLTest
 //
 //  Created by Márcio Sarroglia Pinho on 18/08/20.
+//  Improvements by Ricardo Süffert and Vinícius Turani (added documented functions implementing the algorithms for point inclusion in concave/convex polygons)
 //  Copyright © 2020 Márcio Sarroglia Pinho. All rights reserved.
 //
 
