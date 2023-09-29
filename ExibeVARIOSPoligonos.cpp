@@ -162,7 +162,6 @@ float angulo=0.0;
 Ponto movingPoint;     // point that the user will move around in the screen
 int currentPolygonIdx; // index of the polygon in which the movingPoint is currently located
 Ponto voroMin, voroMax;
-Ponto extremeLeftPoint; // used for generating a straight line from the left border of the diagram to the moving point
 
 #define ENABLE_DEBUG_FEATURES 1
 
@@ -302,8 +301,6 @@ void init()
     int counter;
     currentPolygonIdx = findCurrentPolygonConvexAlgorithm(counter);
 
-    extremeLeftPoint.x = Min.x;
-
     // each step of the point will measure 0.5% of the lenght of the diagram
     movementStepX = (Max.x-Min.x) * 0.005;
     movementStepY = (Max.y-Min.y) * 0.005;
@@ -433,7 +430,7 @@ string concavePolygonInclusion(int& counter, int& currentPolIdx)
                 Ponto P1, P2;
                 poli.getAresta(j, P1, P2);
                 callsToHaInterseccao++;
-                if (HaInterseccao(extremeLeftPoint, movingPoint, P1, P2)) intersectionCont++;
+                if (HaInterseccao(Ponto(voroMin.x, movingPoint.y), movingPoint, P1, P2)) intersectionCont++;
             }
             if (intersectionCont % 2 != 0) // if number of intersections is odd, the point is in the polygon
             {
@@ -514,10 +511,8 @@ void display( void )
         P = Voro.getPoligono(i);
         #if ENABLE_DEBUG_FEATURES
             Envelope e = Voro.getEnvelope(i);
-            if (e.pontoEstaDentro(movingPoint))
-                glColor3f(1,1,1);
-            else
-                defineCor(CoresDosPoligonos[i]);
+            if (e.pontoEstaDentro(movingPoint)) glColor3f(1,1,1);
+            else defineCor(CoresDosPoligonos[i]);
         #else
             defineCor(CoresDosPoligonos[i]);
         #endif
@@ -531,6 +526,12 @@ void display( void )
         P.desenhaPoligono();
     }
     drawPoint(movingPoint, 7);
+
+    #if ENABLE_DEBUG_FEATURES
+        glColor3f(1,0,0);
+        DesenhaLinha(Ponto(voroMin.x, movingPoint.y), movingPoint);
+    #endif
+
     glutSwapBuffers();
 }
 
@@ -605,7 +606,6 @@ void keyboard ( unsigned char key, int x, int y )
         case 'd': if (movingPoint.x + movementStepX < voroMax.x) movingPoint.x+=movementStepX; break;
 		default:                                                                               break;
 	}
-    extremeLeftPoint.y = movingPoint.y;
 	calculateInclusion();
 }
 
