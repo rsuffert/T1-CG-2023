@@ -164,6 +164,8 @@ int currentPolygonIdx; // index of the polygon in which the movingPoint is curre
 Ponto voroMin, voroMax;
 Ponto extremeLeftPoint; // used for generating a straight line from the left border of the diagram to the moving point
 
+#define ENABLE_DEBUG_FEATURES 1
+
 // **********************************************************************
 //
 // **********************************************************************
@@ -509,8 +511,16 @@ void display( void )
     bool shouldPrintPolIdx = Voro.getNPoligonos() < 30;
     for (int i=0; i<Voro.getNPoligonos(); i++)
     {
-        defineCor(CoresDosPoligonos[i]);
         P = Voro.getPoligono(i);
+        #if ENABLE_DEBUG_FEATURES
+            Envelope e = Voro.getEnvelope(i);
+            if (e.pontoEstaDentro(movingPoint))
+                glColor3f(1,1,1);
+            else
+                defineCor(CoresDosPoligonos[i]);
+        #else
+            defineCor(CoresDosPoligonos[i]);
+        #endif
         P.pintaPoligono();
         if (shouldPrintPolIdx) ImprimeNroDoPoligono(P, i);
     }
@@ -521,7 +531,6 @@ void display( void )
         P.desenhaPoligono();
     }
     drawPoint(movingPoint, 7);
-
     glutSwapBuffers();
 }
 
@@ -588,18 +597,15 @@ void calculateInclusion()
 // **********************************************************************
 void keyboard ( unsigned char key, int x, int y )
 {
-    bool movementApplied = true;
 	switch ( key )
 	{
         case 'w': if (movingPoint.y + movementStepY < voroMax.y) movingPoint.y+=movementStepY; break;
         case 'a': if (movingPoint.x - movementStepX > voroMin.x) movingPoint.x-=movementStepX; break;
         case 's': if (movingPoint.y - movementStepY > voroMin.y) movingPoint.y-=movementStepY; break;
         case 'd': if (movingPoint.x + movementStepX < voroMax.x) movingPoint.x+=movementStepX; break;
-		default:  movementApplied = false;                                 break;
+		default:                                                                               break;
 	}
-
     extremeLeftPoint.y = movingPoint.y;
-
 	calculateInclusion();
 }
 
